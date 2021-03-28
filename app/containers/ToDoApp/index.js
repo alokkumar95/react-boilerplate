@@ -32,6 +32,7 @@ export function ToDoApp(props) {
 
   return (
     <div>
+      <h1>List of task</h1>
       <input
         className="form-control"
         type="text"

@@ -10,7 +10,7 @@
  *
  */
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -26,6 +26,8 @@ import messages from './messages';
 import { ADD_TASK } from './constants';
 import './noodle.css';
 import { brands } from './constants';
+// import {Restaurant} from './Restaurant';
+const Restaurant = React.lazy(() => import('./Restaurant'));
 
 export function ToDoApp(props) {
   useInjectReducer({ key: 'toDoApp', reducer });
@@ -92,7 +94,7 @@ export function ToDoApp(props) {
       </div>
     );
   });
-  
+
   return (
     <div>
       <h1>Search Top Ramen Restaurant</h1>
@@ -106,7 +108,15 @@ export function ToDoApp(props) {
         />
       </div>
       <h2>Ramen Restaurant</h2>
-      <div className="grid-container">{brandsData}</div>
+      {/* <div className="grid-container">{brandsData}</div> */}
+
+      <Suspense fallback={<div>Loading...</div>}>
+        <Restaurant
+          searchedbrands={searchedbrands}
+          brands={brands}
+          prop={props}
+        />
+      </Suspense>
     </div>
   );
 }

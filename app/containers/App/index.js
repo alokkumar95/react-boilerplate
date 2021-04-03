@@ -16,6 +16,7 @@ import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Header from 'components/Header';
 import Footer from 'components/Footer';
 import ToDoApp from '../ToDoApp';
+import {RestaurantDetail} from '../ToDoApp/RestaurantDetail';
 
 import GlobalStyle from '../../global-styles';
 
@@ -41,6 +42,7 @@ export default function App() {
       <Switch>
         <Route exact path="/" component={ToDoApp} />
         <Route exact path="/todo" component={ToDoApp} />
+        <Route exact path="/restaurant_detail/:id" component={RestaurantDetail} />
         <Route path="" component={NotFoundPage} />
       </Switch>
     </AppWrapper>

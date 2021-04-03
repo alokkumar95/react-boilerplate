@@ -1,3 +1,9 @@
+/* eslint-disable react/button-has-type */
+/* eslint-disable func-names */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable object-shorthand */
+/* eslint-disable react/prop-types */
 /**
  *
  * ToDoApp
@@ -18,44 +24,89 @@ import reducer from './reducer';
 import saga from './saga';
 import messages from './messages';
 import { ADD_TASK } from './constants';
+import './noodle.css';
+import { brands } from './constants';
 
 export function ToDoApp(props) {
   useInjectReducer({ key: 'toDoApp', reducer });
   useInjectSaga({ key: 'toDoApp', saga });
-  const [state, setState] = React.useState('');
 
-  const tasks = props.toDoApp.tasks || [];
+  const [searchedbrands, setSearchedbrands] = React.useState([]);
+  // const [state, setState] = React.useState('');
 
-  React.useEffect(() => {
-    console.log('Props==', props);
-  }, [props]);
+  // const tasks = props.toDoApp.tasks || [];
 
-  return (
-    <div>
-      <h1>List of task</h1>
-      <input
-        className="form-control"
-        type="text"
-        value={state}
-        onChange={event => {
-          const { value } = event.target;
-          setState(value);
-        }}
-      />
-      <button
-        type="button"
+  const timer = {};
+  const debounce = (callback, ms, id) => {
+    if (timer[id]) {
+      clearTimeout(timer[id]);
+    }
+    timer[id] = setTimeout(() => callback(), ms);
+  };
+
+  const searchFilter = value => {
+    console.log(brands);
+    const filteredbrands = (brands || []).filter(record => {
+      const brand = record.Brand.toLowerCase();
+      const val = value.toLowerCase();
+      return brand.includes(val);
+    });
+    setSearchedbrands([...filteredbrands]);
+  };
+  const images = [
+    'https://s3-ap-southeast-1.amazonaws.com/he-public-data/images135ea53.jpeg',
+    'https://s3-ap-southeast-1.amazonaws.com/he-public-data/indexee3e8a8.jpeg',
+    'https://s3-ap-southeast-1.amazonaws.com/he-public-data/garlic-noodles-61-700x6802c7f765.jpeg',
+    'https://s3-ap-southeast-1.amazonaws.com/he-public-data/Hakka-Noodles-2-34755e38.jpeg',
+    'https://s3-ap-southeast-1.amazonaws.com/he-public-data/1200px-Mama_instant_noodle_block625f483.jpeg',
+    'https://s3-ap-southeast-1.amazonaws.com/he-public-data/20190530-ramen-noodles-vicky-wasik-76-1500x11257be7d5b.jpeg',
+    'https://s3-ap-southeast-1.amazonaws.com/he-public-data/200702_Hand-Pulled-Noodles_55099856b5.jpeg',
+  ];
+
+  const brandsData = (searchedbrands.length > 0
+    ? searchedbrands
+    : brands || []
+  ).map((data, id) => {
+    const image = images[Math.floor(Math.random() * images.length)];
+    return (
+      <div
+        className="card"
         onClick={() => {
-          props.dispatch({ type: ADD_TASK, data: state });
-          setState('');
+          props.history.push({
+            pathname: `/restaurant_detail/${id}`,
+            state: { index: id, img: image, data: data },
+          });
         }}
       >
-        Add Task
-      </button>
-      <ul>
-        {tasks.map(data => (
-          <li>{data}</li>
-        ))}
-      </ul>
+        <img src={image} alt="Avatar" style={{ width: '100%' }} />
+        <div className="container">
+          <h4>
+            <b>{data.Brand}</b>
+          </h4>
+          <p>{data.Variety}</p>
+          <p>{data.Style}</p>
+          <p>{data.Country}</p>
+          <p>{data.Stars}</p>
+          <p>{data['Top Ten']}</p>
+        </div>
+      </div>
+    );
+  });
+  
+  return (
+    <div>
+      <h1>Search Top Ramen Restaurant</h1>
+      <div>
+        <input
+          type="text"
+          onChange={event => {
+            const { value } = event.target;
+            debounce(() => searchFilter(value), 100, 'brandSearch');
+          }}
+        />
+      </div>
+      <h2>Ramen Restaurant</h2>
+      <div className="grid-container">{brandsData}</div>
     </div>
   );
 }
